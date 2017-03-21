@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:方法接口 -->
+<mapper namespace="com.ssm.student.mapper.StuPageMapper">
+
+    <resultMap id="stuEntity" type="com.ssm.student.entity.StuEntity">
+        <id column="t_student_id" property="studentId" />
+        <result column="student_Name" property="studentName" />
+        <result column="address" property="address" />
+        <result column="birth" property="birth" />
+        <result column="email" property="email" />
+        <result column="identity_Card" property="identityCard" />
+    </resultMap>
+
+    <select id="queryStudentCount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM t_student s
+        WHERE  s.exist=1
+        <if test="majorId!=null and majorId!='' and  majorId!=1000 ">
+            and  s.major_id= #{majorId}
+        </if>
+        <if test="gradeId!=null and gradeId!='' and  gradeId!=1000 ">
+            and  s.grade_Id= #{gradeId}
+        </if>
+        <if test="sexId!=null and sexId!='' and  sexId!=1000 ">
+            and  s.sex_Id= #{sexId}
+        </if>
+        <if test="nationId!=null and nationId!='' and  nationId!=1000 ">
+            and  s.nation_Id= #{nationId}
+        </if>
+        <if test="nativePlaceId!=null and nativePlaceId!='' and  nativePlaceId!=1000 ">
+            and  s.nativePlace_Id= #{nativePlaceId}
+        </if>
+        <if test="politicsStatusId!=null and politicsStatusId!='' and  politicsStatusId!=1000 ">
+            and  s.politicsStatus_Id= #{politicsStatusId}
+        </if>;
+    </select>
+
+    <select id="queryStuPage" resultMap="stuEntity">
+    SELECT
+        s.t_student_id,
+        s.student_Name,
+        s.address,
+        s.birth,
+        s.email,
+        s.identity_Card
+        FROM t_student s where s.t_student_id >=
+        (
+            SELECT
+            s.t_student_id
+            from t_student s
+            WHERE
+            s.exist=1
+        <if test="majorId!=null and majorId!='' and  majorId!=1000 ">
+            and  s.major_id= #{majorId}
+        </if>
+        <if test="gradeId!=null and gradeId!='' and  gradeId!=1000 ">
+            and  s.grade_Id= #{gradeId}
+        </if>
+        <if test="sexId!=null and sexId!='' and  sexId!=1000 ">
+            and  s.sex_Id= #{sexId}
+        </if>
+        <if test="nationId!=null and nationId!='' and  nationId!=1000 ">
+            and  s.nation_Id= #{nationId}
+        </if>
+        <if test="nativePlaceId!=null and nativePlaceId!='' and  nativePlaceId!=1000 ">
+            and  s.nativePlace_Id= #{nativePlaceId}
+        </if>
+        <if test="politicsStatusId!=null and politicsStatusId!='' and  politicsStatusId!=1000 ">
+            and  s.politicsStatus_Id= #{politicsStatusId}
+        </if>
+
+            LIMIT ${offset},1
+        )
+        ORDER BY s.t_student_id
+        <if test="flag == 1 ">
+            DESC
+        </if>
+        LIMIT ${pageSize};
+</select>
+
+    <update id="updateStuData" parameterType="com.ssm.student.entity.StudentEntity">
+        update t_student s
+        <set>
+            s.student_Name=#{studentEntity.studentName},
+            s.address=#{studentEntity.address},
+            s.birth=#{studentEntity.birth},
+            s.identity_Card=#{studentEntity.identityCard},
+            s.email= #{studentEntity.email},
+            s.sex_id=#{studentEntity.sexEntity.sexEntityId},
+            s.nation_id=#{studentEntity.nationEntity.nationEntityId},
+            s.politicsStatus_id=#{studentEntity.politicsStatusEntity.psEntityId},
+            s.nativePlace_id= #{studentEntity.nativePlaceEntity.npEntityId},
+            s.grade_id= #{studentEntity.gradeEntity.gradeEntityId},
+            s.major_id= #{studentEntity.majorEntity.majorEntityId}
+        </set>
+        where t_student_id=#{studentEntity.studentId}
+    </update>
+    <update id="deleteOneStudent" parameterType="int">
+        update t_student s
+        set
+        s.exist=0
+        where s.t_student_id=#{studentId}
+    </update>
+
+    <update id="deleteBatchStu" parameterType="List">
+        update t_student s
+        set
+        s.exist=0 where
+        <foreach collection="studentId" item="id" index="index" separator=",">
+             s.t_student_id=#{id}
+        </foreach>
+    </update>
+
+
+
+</mapper>

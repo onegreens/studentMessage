@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:方法接口 -->
+<mapper namespace="com.ssm.login.mapper.UserMapper">
+
+    <!-- 用户映射 -->
+    <resultMap id="userEntity" type="com.ssm.login.entity.UserEntity">
+        <id property="userEntityId" column="t_user_id" />
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <collection ofType="com.ssm.login.entity.RoleEntity" property="roleEntityList" />
+    </resultMap>
+
+    <resultMap id="roles" type="com.ssm.login.entity.RoleEntity">
+        <id property="roleEntityId" column="t_role_id" />
+        <result property="roleName" column="role_name"/>
+    </resultMap>
+
+
+    <select id="queryUserRole" parameterType="Integer" resultType="Integer">
+        SELECT
+        ur.t_user_role_id
+        FROM
+        t_user_role ur
+        WHERE
+        ur.user_id=#{userId}
+        AND
+        ur.role_id=#{roleId}
+    </select>
+
+    <select id="login" resultMap="userEntity" parameterType="String" >
+        select
+         u.t_user_id,
+         u.account,
+         u.password,
+         u.email
+         FROM
+         t_user u
+         WHERE u.account=#{account}
+         and u.password=#{password}
+    </select>
+
+    <select id="testEmail" resultMap="userEntity" parameterType="String" >
+        select
+        u.t_user_id,
+        u.account,
+        u.password,
+        u.email
+        FROM
+        t_user u
+        WHERE u.email=#{email}
+
+    </select>
+
+    <update id="changePassword" >
+        update t_user set password = #{password} where t_user_id=#{userId};
+    </update>
+
+    <insert id="addUser" parameterType="com.ssm.login.entity.UserEntity"
+            useGeneratedKeys="true" keyProperty="userEntity.userEntityId">
+          INSERT into t_user(account,password,email)
+          VALUES (#{userEntity.account},#{userEntity.password},#{userEntity.email})
+    </insert>
+
+    <insert id="addUserRoleStu" parameterType="int">
+        insert into t_user_role (user_id,role_id)
+        VALUES (#{userId},#{roleId})
+    </insert>
+
+
+
+    <select id="queryUserList" resultMap="userEntity" >
+        select
+        u.t_user_id,
+        u.account,
+        u.email
+        FROM
+          t_user u
+        WHERE
+          u.t_user_id >=
+        (
+          SELECT
+          u.t_user_id
+          FROM
+          t_user u
+          WHERE u.flag=1
+          ORDER BY u.t_user_id
+          LIMIT ${offset},1
+        )
+        LIMIT ${pageSize};
+    </select>
+
+
+    <update id="deleteUser" parameterType="Integer">
+        update t_user u
+        set u.flag=2
+        WHERE
+        u.t_user_id=#{userId}
+    </update>
+
+    <select id="queryUserCount" resultType="int" >
+        select
+        count(*)
+        FROM
+        t_user u
+        WHERE
+        u.flag=1
+    </select>
+
+    <select id="queryUser" resultMap="userEntity" >
+        select
+        u.t_user_id,
+        u.account,
+        u.email
+        r.t_role_id,
+        r.role_name
+        FROM
+        t_user u,
+        t_role r,
+        t_user_role ur
+        WHERE
+        u.flag=1
+        and u.t_user_id=#{userId}
+        and ur.user_id =#{userId}
+        and r.t_role_id =ur.role_id
+    </select>
+</mapper>

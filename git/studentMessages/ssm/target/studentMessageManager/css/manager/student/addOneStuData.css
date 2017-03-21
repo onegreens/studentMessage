@@ -1,0 +1,29 @@
+#adminName{
+    color: #000000;
+    font-size: 20px;
+}
+
+#div1{
+    width: 600px;
+    margin-top: 10%;
+    margin-left: 25%;
+    font-size: 20px;
+}
+#message{
+    color: red;
+    width: 450px;
+    font-size: 20px;
+}
+.pad{
+    padding-top: 10px;
+    float: left;
+    width: 100%;
+}
+
+.pad label{
+     width: 20%;
+ }
+
+.pad div{
+    width: 80%;
+}

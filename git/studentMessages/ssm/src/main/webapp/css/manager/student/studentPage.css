@@ -1,0 +1,19 @@
+.listMain {
+    width: 90%;
+    text-align: center;
+    margin-top: 50px;
+    margin-left: 70px;
+}
+
+td
+{
+    white-space: nowrap;
+}
+.delete{
+    width: 20px;
+}
+
+.message{
+    color: red;
+    font-size: 20px;
+}

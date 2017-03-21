@@ -1,0 +1,22 @@
+#userDataVO{
+    text-align : center;
+    margin-left: 160px;
+    margin-top: 40px;
+    width: 800px;
+}
+
+#loadTable{
+    padding: 8px;
+    line-height: 2.0;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.td{
+    width: 40%;
+    padding-top: 12px;
+}

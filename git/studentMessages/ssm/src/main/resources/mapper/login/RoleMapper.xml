@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:方法接口 -->
+<mapper namespace="com.ssm.login.mapper.RoleMapper">
+    <!-- 权限映射 -->
+    <resultMap id="permission" type="com.ssm.login.entity.PermissionEntity">
+        <id property="permissionEntityId" column="t_permission_id" />
+        <result property="permission" column="permission"/>
+        <collection property="operationEntities" ofType="com.ssm.login.entity.OperationEntity" resultMap="operation" ></collection>
+    </resultMap>
+
+    <!-- 操作映射 -->
+    <resultMap id="operation" type="com.ssm.login.entity.OperationEntity">
+        <id property="operationEntityId" column="t_operation_id" />
+        <result property="operation" column="operation"/>
+        <result property="method" column="method"/>
+    </resultMap>
+
+    <resultMap id="roles" type="com.ssm.login.entity.RoleEntity">
+        <id property="roleEntityId" column="t_role_id" />
+        <result property="roleName" column="role_name"/>
+    </resultMap>
+
+
+    <select id="queryPermission" resultMap="permission" parameterType="int">
+        SELECT
+        p.t_permission_Id,
+        p.permission,
+        o.t_operation_id,
+        o.operation,
+        o.method
+        FROM
+        t_role_permission rp,
+        t_permission p,
+        t_permission_operation po,
+        t_operation o
+        where rp.role_Id=#{roleId}
+        and p.t_permission_id=rp.permission_id
+        and po.permission_id=p.t_permission_id
+        and o.t_operation_id=po.operation_id
+    </select>
+
+    <select id="queryRole" resultMap="roles">
+        select
+        r.t_role_id,
+        r.role_name
+        from t_role r
+        WHERE
+        r.flag=1;
+    </select>
+
+    <select id="queryRoleId" resultType="int" parameterType="String">
+        select
+        r.t_role_id,
+        from t_role r
+        WHERE r.role_name=#{roleName}
+        AND
+        r.flag=1;
+    </select>
+
+</mapper>

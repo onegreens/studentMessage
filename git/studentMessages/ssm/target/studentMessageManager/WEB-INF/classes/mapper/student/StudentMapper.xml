@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:方法接口 -->
+<mapper namespace="com.ssm.student.mapper.StudentMapper">
+
+    <resultMap id="sex" type="com.ssm.other.entity.SexEntity">
+        <id column="t_sex_id" property="sexEntityId" />
+        <result column="sex" property="sex" />
+    </resultMap>
+
+    <resultMap id="nation" type="com.ssm.other.entity.NationEntity">
+        <id column="t_nation_id" property="nationEntityId" />
+        <result column="nation_Name" property="nationName" />
+    </resultMap>
+
+    <resultMap id="nativePlace" type="com.ssm.other.entity.NativePlaceEntity">
+        <id column="t_NativePlace_id" property="npEntityId" />
+        <result column="native_Place" property="nativePlace" />
+    </resultMap>
+
+    <resultMap id="politicsStatus" type="com.ssm.other.entity.PoliticsStatusEntity">
+        <id column="t_politicsStatus_id" property="psEntityId" />
+        <result column="politics_Status" property="politicsStatus" />
+    </resultMap>
+
+    <resultMap id="grade" type="com.ssm.other.entity.GradeEntity">
+        <id column="t_grade_id" property="gradeEntityId" />
+        <result column="grade" property="grade" />
+    </resultMap>
+
+    <resultMap id="academy" type="com.ssm.other.entity.AcademyEntity">
+        <id column="t_academy_id" property="academyEntityId" />
+        <result column="academy" property="academy" />
+    </resultMap>
+
+    <resultMap id="major" type="com.ssm.other.entity.MajorEntity">
+        <id column="t_major_id" property="majorEntityId" />
+        <result column="major" property="major" />
+        <association property="academyEntity" column="academy_id" resultMap="academy" />
+    </resultMap>
+
+    <resultMap id="student" type="com.ssm.student.entity.StudentEntity">
+        <id column="t_student_id" property="studentId" />
+        <result column="student_Name" property="studentName" />
+        <result column="address" property="address" />
+        <result column="birth" property="birth" />
+        <result column="email" property="email" />
+        <result column="identity_Card" property="identityCard" />
+        <association property="sexEntity" column="sex_id" resultMap="sex" />
+        <association property="nationEntity" column="nation_id" resultMap="nation" />
+        <association property="politicsStatusEntity" column="politicsStatus_id" resultMap="politicsStatus" />
+        <association property="nativePlaceEntity" column="nativePlace_id" resultMap="nativePlace" />
+        <association property="gradeEntity"  column="grade_id" resultMap="grade" />
+        <association property="majorEntity" column="major_id" resultMap="major" />
+    </resultMap>
+
+
+    <insert id="addOneStudent" parameterType="com.ssm.student.entity.StudentEntity" useGeneratedKeys="true" keyProperty="studentEntity.studentId">
+        insert into t_student(student_Name,address,birth,identity_Card,email,sex_id,nation_id,politicsStatus_id,nativePlace_id,grade_id,major_id,exist)
+        values(
+        #{studentEntity.studentName},
+        #{studentEntity.address},
+        #{studentEntity.birth},
+        #{studentEntity.identityCard},
+        #{studentEntity.email},
+        #{studentEntity.sexEntity.sexEntityId},
+        #{studentEntity.nationEntity.nationEntityId},
+        #{studentEntity.politicsStatusEntity.psEntityId},
+        #{studentEntity.nativePlaceEntity.npEntityId},
+        #{studentEntity.gradeEntity.gradeEntityId},
+        #{studentEntity.majorEntity.majorEntityId},1)
+    </insert>
+
+    <select id="queryOneStudent" resultMap="student" parameterType="int">
+        SELECT
+        *
+        FROM
+        t_student s,
+        t_sex sex,
+        t_nation n,
+        t_nativeplace np,
+        T_politicsStatus ps,
+        t_grade g,
+        t_major m
+        WHERE s.t_student_id=#{studentId}
+        AND s.sex_id=sex.t_sex_id
+        AND s.nation_id=n.t_nation_id
+        AND s.nativePlace_id=np.t_nativePlace_id
+        AND s.politicsStatus_id=ps.T_politicsStatus_id
+        AND s.grade_id=g.t_grade_Id
+        AND s.major_id=m.t_major_Id
+        and s.exist=1;
+    </select>
+
+    <update id="addUserStu" parameterType="int" >
+        update t_student set user_id=#{userId} where t_student_id=#{studentId}
+    </update>
+
+
+    <select id="queryMajorList" resultMap="major">
+        select *
+        from t_major m
+        ORDER by t_major_id DESC ;
+    </select>
+
+    <select id="queryGradeList" resultMap="grade">
+        select * from t_grade order by t_grade_id desc;
+    </select>
+
+    <select id="querySexList" resultMap="sex">
+      select * from t_sex order by t_sex_id desc;
+    </select>
+
+    <select id="queryPSList" resultMap="politicsStatus">
+        select * from T_politicsStatus order by T_politicsStatus_id desc;
+    </select>
+
+    <select id="queryNPList" resultMap="nativePlace">
+        select * from T_nativePlace order by T_nativePlace_id desc;
+    </select>
+
+    <select id="queryNationList" resultMap="nation">
+        select * from T_nation order by T_nation_id desc;
+    </select>
+
+    <insert id="addBatchStuData"
+            parameterType="java.util.ArrayList">
+        insert into t_student(
+        t_student_Id,
+        student_Name,
+        address,birth,
+        identity_Card,
+        email,
+        sex_id,
+        nation_id,
+        politicsStatus_id,
+        nativePlace_id,
+        grade_id,
+        major_id,exist)
+        values
+        <foreach collection="stuIdEntityList" item="stuIdEntity" index="index" separator=",">
+            (#{stuIdEntity.studentId},
+            #{stuIdEntity.studentName},
+            #{stuIdEntity.address},
+            #{stuIdEntity.birth},
+            #{stuIdEntity.identityCard},
+            #{stuIdEntity.email},
+            #{stuIdEntity.sexId},
+            #{stuIdEntity.nationId},
+            #{stuIdEntity.politicsStatusId},
+            #{stuIdEntity.nativePlaceId},
+            #{stuIdEntity.gradeId},
+            #{stuIdEntity.majorId},
+            1)
+        </foreach>
+    </insert>
+
+    <select id="queryOneStuByName" resultMap="student" parameterType="String">
+        SELECT
+        *
+        FROM
+        t_student s,
+        t_sex sex,
+        t_nation n,
+        t_nativeplace np,
+        T_politicsStatus ps,
+        t_grade g,
+        t_major m
+        WHERE s.student_name=#{studentName}
+        AND s.sex_id=sex.t_sex_id
+        AND s.nation_id=n.t_nation_id
+        AND s.nativePlace_id=np.t_nativePlace_id
+        AND s.politicsStatus_id=ps.T_politicsStatus_id
+        AND s.grade_id=g.t_grade_Id
+        AND s.major_id=m.t_major_Id
+        and s.exist=1;
+    </select>
+
+
+</mapper>
